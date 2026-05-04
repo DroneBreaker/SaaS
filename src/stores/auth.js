@@ -16,9 +16,10 @@ export const useAuthStore = defineStore('auth', () => {
       
       // Map supabase user / mock user to local state
       user.value = {
+        id: data.user.id,
         name: data.user.user_metadata?.name || email.split('@')[0],
         email: data.user.email,
-        role: data.user.user_metadata?.role || 'User', // Use user_metadata for role
+        role: data.user.user_metadata?.role || 'User',
         avatar: data.user.user_metadata?.avatar || `https://ui-avatars.com/api/?name=${email}&background=4f46e5&color=fff`,
         token: data.session?.access_token
       }

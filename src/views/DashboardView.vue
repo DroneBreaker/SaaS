@@ -13,9 +13,14 @@ import {
 import { Line } from 'vue-chartjs'
 import { useReportsStore } from '../stores/reports'
 import { storeToRefs } from 'pinia'
+import { onMounted } from 'vue'
 
 const reportsStore = useReportsStore()
 const { savedReports } = storeToRefs(reportsStore)
+
+onMounted(() => {
+  reportsStore.fetchAllReports()
+})
 
 ChartJS.register(
   CategoryScale,

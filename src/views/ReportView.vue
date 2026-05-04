@@ -49,8 +49,8 @@ const handleNext = () => {
   }
 }
 
-const handleSave = () => {
-  saveReport()
+const handleSave = async () => {
+  await saveReport()
   router.push('/')
 }
 
@@ -67,6 +67,26 @@ watch(() => formData.value.jobNumber, (newVal) => {
     formData.value.workOrderNumber = newVal
   }
 })
+
+const handleFileChange = (event, field) => {
+  const files = Array.from(event.target.files)
+  files.forEach(file => {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      formData.value[field].push({
+        file,
+        name: file.name,
+        type: file.type,
+        preview: e.target.result
+      })
+    }
+    reader.readAsDataURL(file)
+  })
+}
+
+const removeFile = (index, field) => {
+  formData.value[field].splice(index, 1)
+}
 
 </script>
 
@@ -329,6 +349,33 @@ watch(() => formData.value.jobNumber, (newVal) => {
                 rows="4"
               ></textarea>
               <span v-if="formErrors.currentWork" class="text-xs text-red-500 mt-1">{{ formErrors.currentWork }}</span>
+
+              <!-- File Upload for Current Work -->
+              <div class="mt-4">
+                <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">Attachments (Images/Videos):</label>
+                <div class="flex flex-wrap gap-3">
+                  <div v-for="(file, index) in formData.currentWorkFiles" :key="index" class="relative group w-20 h-20 rounded-lg overflow-hidden border border-slate-200 shadow-sm">
+                    <img v-if="file.type.startsWith('image/')" :src="file.preview" class="w-full h-full object-cover" />
+                    <div v-else class="w-full h-full bg-slate-100 flex items-center justify-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                    <button @click="removeFile(index, 'currentWorkFiles')" class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                  <label class="w-20 h-20 border-2 border-dashed border-slate-200 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-[#eb6134] hover:bg-orange-50 transition-all text-slate-400 hover:text-[#eb6134]">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    <span class="text-[10px] font-bold">ADD</span>
+                    <input type="file" multiple accept="image/*,video/*" class="hidden" @change="e => handleFileChange(e, 'currentWorkFiles')" />
+                  </label>
+                </div>
+              </div>
             </div>
 
             <!-- Summary of Completed Work -->
@@ -352,6 +399,33 @@ watch(() => formData.value.jobNumber, (newVal) => {
                 placeholder="Summarize the work completed today..."
                 rows="4"
               ></textarea>
+
+              <!-- File Upload for Completed Work -->
+              <div class="mt-4">
+                <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">Attachments (Images/Videos):</label>
+                <div class="flex flex-wrap gap-3">
+                  <div v-for="(file, index) in formData.completedWorkFiles" :key="index" class="relative group w-20 h-20 rounded-lg overflow-hidden border border-slate-200 shadow-sm">
+                    <img v-if="file.type.startsWith('image/')" :src="file.preview" class="w-full h-full object-cover" />
+                    <div v-else class="w-full h-full bg-slate-100 flex items-center justify-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                    <button @click="removeFile(index, 'completedWorkFiles')" class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                  <label class="w-20 h-20 border-2 border-dashed border-slate-200 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-[#eb6134] hover:bg-orange-50 transition-all text-slate-400 hover:text-[#eb6134]">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    <span class="text-[10px] font-bold">ADD</span>
+                    <input type="file" multiple accept="image/*,video/*" class="hidden" @change="e => handleFileChange(e, 'completedWorkFiles')" />
+                  </label>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -417,7 +491,7 @@ watch(() => formData.value.jobNumber, (newVal) => {
         </div>
 
         <!-- Step 6: Confirmation -->
-        <div v-else-if="currentStep === 6" key="step6" class="form-card flex flex-col items-center justify-center py-16">
+        <div v-else-if="currentStep === 6" key="step6" class="form-card flex flex-col items-center justify-center py-12">
           <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mb-6 shadow-sm border border-emerald-200">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
@@ -425,7 +499,25 @@ watch(() => formData.value.jobNumber, (newVal) => {
           </div>
           
           <h2 class="text-2xl font-bold text-slate-800 mb-2">Confirmation of Daily Report</h2>
-          <p class="text-slate-500 mb-8 text-center max-w-md">Are you sure you want to save this Daily Report?<br><span class="text-sm">Please review all information before submitting.</span></p>
+          <p class="text-slate-500 mb-6 text-center max-w-md">Are you sure you want to save this Daily Report?<br><span class="text-sm">Please review all information before submitting.</span></p>
+
+          <!-- Email Sending Options -->
+          <div class="w-full max-w-sm mb-8 bg-slate-50 p-4 rounded-xl border border-slate-200">
+            <label class="flex items-center gap-3 cursor-pointer mb-2">
+              <input type="checkbox" v-model="formData.sendEmail" class="w-5 h-5 text-[#334b62] rounded border-slate-300 focus:ring-[#334b62]" />
+              <span class="text-slate-700 font-medium text-sm">Send copy via Email</span>
+            </label>
+            <transition name="fade-slide">
+              <div v-if="formData.sendEmail" class="mt-3">
+                <input 
+                  type="email" 
+                  v-model="formData.sendToEmail" 
+                  placeholder="Enter recipient email address" 
+                  class="form-input !py-2 !text-sm"
+                />
+              </div>
+            </transition>
+          </div>
 
           <div class="flex items-center gap-4">
             <button @click="prevStep" class="btn-secondary">Back</button>
