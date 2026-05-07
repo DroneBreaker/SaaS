@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue'
+import logo from '../assets/logo.png'
 
 const props = defineProps({
   data: {
@@ -26,10 +27,9 @@ const allImages = computed(() => {
     <!-- Header -->
     <div class="pdf-header flex justify-between items-end mb-4">
       <h1 class="text-3xl font-bold m-0 leading-none" style="color: #334b62">Daily Report</h1>
-      <!-- KIITOS Logo Placeholder -->
-      <div class="logo-placeholder flex items-center">
-        <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-xl mr-2" style="background-color: #334b62">K</div>
-        <span class="text-2xl font-black tracking-wider" style="color: #334b62">KIITOS</span>
+      <!-- Stitch Energy Logo -->
+      <div class="logo-container flex items-center">
+        <img :src="logo" alt="Stitch Energy Logo" class="h-14 w-auto object-contain" />
       </div>
     </div>
 
